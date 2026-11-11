@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: dim_fechas
+    description: "Calendario diario 2025-2026."
+    columns:
+      - name: fecha
+        data_tests: [unique, not_null]
+
+  - name: dim_companias
+    description: "Dimensión de compañías."
+    columns:
+      - name: codigo_compania
+        data_tests: [unique, not_null]
+
+  - name: dim_aeropuertos
+    description: "Dimensión de aeropuertos, con miembro desconocido 'UNK'."
+    columns:
+      - name: codigo_iata
+        data_tests: [unique, not_null]
+
+  - name: dim_aviones
+    description: "Dimensión de aviones, con miembro desconocido 'UNK'."
+    columns:
+      - name: matricula
+        data_tests: [unique, not_null]
+
+  - name: fct_vuelos
+    description: "Tabla de hechos: un registro por vuelo y fecha."
+    columns:
+      - name: id_vuelo
+        data_tests: [unique, not_null]
+      - name: fecha_vuelo
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_fechas')
+                field: fecha
+      - name: codigo_compania
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_companias')
+                field: codigo_compania
+      - name: codigo_origen
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_aeropuertos')
+                field: codigo_iata
+      - name: codigo_destino
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_aeropuertos')
+                field: codigo_iata
+      - name: matricula
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_aviones')
+                field: matricula
