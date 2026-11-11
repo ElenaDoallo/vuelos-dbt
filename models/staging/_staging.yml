@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_companias
+    description: "Compañías del grupo, con códigos y categorías normalizados."
+    columns:
+      - name: codigo_compania
+        description: "Código de la compañía. Clave primaria."
+        data_tests:
+          - unique
+          - not_null
+      - name: tipo_compania
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Red', 'Low cost', 'Regional']
+
+  - name: stg_aeropuertos
+    description: "Catálogo de aeropuertos sin duplicados. Continente 'Desconocido' si no venía informado."
+    columns:
+      - name: codigo_iata
+        description: "Código IATA en mayúsculas. Clave primaria."
+        data_tests:
+          - unique
+          - not_null
+      - name: continente
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Europa', 'América', 'África', 'Desconocido']
+
+  - name: stg_aviones
+    description: "Flota: un registro por avión, con modelo y fabricante normalizados."
+    columns:
+      - name: matricula
+        description: "Matrícula del avión. Clave primaria."
+        data_tests:
+          - unique
+          - not_null
+      - name: capacidad
+        description: "Número de asientos configurados. Puede ser nulo si el maestro no lo informa."
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: stg_vuelos
+    description: "Un registro por vuelo: deduplicado, con tipos convertidos y estado corregido por evidencia."
+    columns:
+      - name: id_vuelo
+        description: "Identificador del vuelo. Clave primaria (grano: un vuelo en una fecha)."
+        data_tests:
+          - unique
+          - not_null
+      - name: fecha_vuelo
+        data_tests:
+          - not_null
+      - name: estado
+        description: "Estado final: Aterrizado, Cancelado o Desviado."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Aterrizado', 'Cancelado', 'Desviado']
+      - name: codigo_compania
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_companias')
+                field: codigo_compania
+      - name: codigo_origen
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aeropuertos')
+                field: codigo_iata
+              config:
+                severity: warn
+      - name: codigo_destino
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aeropuertos')
+                field: codigo_iata
+              config:
+                severity: warn
+      - name: matricula
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aviones')
+                field: matricula
+              config:
+                severity: warn
