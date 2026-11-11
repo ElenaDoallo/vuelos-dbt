@@ -1,0 +1,62 @@
+version: 2
+
+sources:
+  - name: raw_data
+    description: "Datos originales del sistema operativo de la aerolínea. Todo en texto y sin limpiar."
+    database: vuelos
+    schema: raw_data
+
+    tables:
+      - name: vuelos
+        description: "Un registro por vuelo cargado. Puede contener duplicados y recargas."
+        config:
+          loaded_at_field: "cast(_cargado_en as timestamp)"
+          freshness:
+            warn_after: {count: 1, period: day}
+            error_after: {count: 3, period: day}
+        columns:
+          - name: id_vuelo
+            description: "Identificador del vuelo en el sistema de origen."
+            data_tests:
+              - not_null:
+                  config:
+                    severity: warn
+              - unique:
+                  config:
+                    severity: warn
+
+      - name: aeropuertos
+        description: "Catálogo de aeropuertos."
+        columns:
+          - name: codigo_iata
+            data_tests:
+              - not_null:
+                  config:
+                    severity: warn
+              - unique:
+                  config:
+                    severity: warn
+
+      - name: companias
+        description: "Compañías del grupo."
+        columns:
+          - name: codigo_compania
+            data_tests:
+              - not_null:
+                  config:
+                    severity: warn
+              - unique:
+                  config:
+                    severity: warn
+
+      - name: aviones
+        description: "Flota: un registro por avión (matrícula)."
+        columns:
+          - name: matricula
+            data_tests:
+              - not_null:
+                  config:
+                    severity: warn
+              - unique:
+                  config:
+                    severity: warn
