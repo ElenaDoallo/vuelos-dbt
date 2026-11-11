@@ -46,3 +46,8 @@ models:
     marts:
       +schema: marts
       +materialized: table
+      +grants:
+        select: ['powerbi_reader']
+
+on-run-end:
+  - "{% for schema in schemas %}{% if schema.endswith('marts') %}grant usage on schema {{ schema }} to powerbi_reader;{% endif %}{% endfor %}"
