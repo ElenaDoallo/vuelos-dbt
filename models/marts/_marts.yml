@@ -26,7 +26,7 @@ models:
         data_tests: [unique, not_null]
 
   - name: fct_vuelos
-    description: "Tabla de hechos de vuelos. Grano: un registro por vuelo y fecha. Fuente para los dashboards de operaciones y puntualidad."
+    description: "Tabla de hechos de vuelos. Grano:un registro por vuelo y fecha. Fuente para los dashboards de operaciones y puntualidad."
     columns:
       - name: id_vuelo
         data_tests: [unique, not_null]
