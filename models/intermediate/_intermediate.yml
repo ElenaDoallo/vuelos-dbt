@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: int_vuelos_horarios
+    description: "Vuelos con timestamps completos (fecha + hora), con corrección de llegadas al día siguiente y retraso de salida calculado."
+    columns:
+      - name: id_vuelo
+        data_tests:
+          - unique
+          - not_null
+
+  - name: int_vuelos_enriquecidos
+    description: "Vuelos con asientos y distancia imputados, claves desconocidas como UNK e indicadores de KPI y calidad."
+    columns:
+      - name: id_vuelo
+        data_tests:
+          - unique
+          - not_null
+      - name: asientos_ofertados
+        data_tests:
+          - not_null
+      - name: distancia_km
+        data_tests:
+          - not_null
+      - name: es_puntual_15
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
